@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import Axios from 'axios';
 import './App.css';
+import Search from './Search';
+import Movies from './Movies';
 const baseUrl = 'http://www.omdbapi.com/';
 
 /**
  * Root Application Component
  */
-export default function App() {
-  // store/update search text & api request results in state
+
+export default function APP() {
+  // SEARCH STATE AND It's results array
   const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState([]);
 
   /**
-   * Event handler for clicking the search button
+   * Event handler for search on click button
    * @param {event} e
    */
   const handleSearch = async (e) => {
-    e.preventDefault(); // prevent page reload
+    // Prevent page reload
+    e.preventDefault();
     await Axios.get(baseUrl, {
       params: {
         apikey: '24ceeb9c',
@@ -24,6 +28,7 @@ export default function App() {
       },
     }).then((response) => setResults(response.data.Search));
   };
+
   return (
     <div className='App'>
       <header>React Movies</header>
@@ -35,53 +40,6 @@ export default function App() {
         />
         <Movies searchResults={results} />
       </main>
-    </div>
-  );
-}
-
-/**
- * Movie card component
- * @param {{movie}} props with movie object containing movie data
- */
-function MovieCard({ movie }) {
-  return (
-    <div className='movie-card'>
-      <h4>{movie.Title}</h4>
-      <img src={movie.Poster || '#'} alt={movie.Title} />
-    </div>
-  );
-}
-
-/**
- * Containe rto hold all movies
- * @param {searchResults} param0
- */
-function Movies({ searchResults }) {
-  return (
-    <div className='movies'>
-      {searchResults !== undefined && searchResults !== []
-        ? searchResults.map((movie) => (
-            <MovieCard key={movie.imdbID} movie={movie} />
-          ))
-        : null}
-    </div>
-  );
-}
-
-/**
- * search bar
- * @param {{string, function, function}} props
- */
-function Search({ value, setValue, onSearch }) {
-  return (
-    <div className='search'>
-      <input
-        type='text'
-        placeholder='Movie name...'
-        value={value}
-        onChange={(e) => setValue(e.currentTarget.value)}
-      />
-      <button onClick={onSearch}>Search</button>
     </div>
   );
 }
