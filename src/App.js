@@ -3,6 +3,7 @@ import Axios from 'axios';
 import './App.css';
 import Search from './Search';
 import Movies from './Movies';
+import usePrevState from './hooks/UsePrevState';
 const baseUrl = 'http://www.omdbapi.com/';
 
 /**
@@ -15,6 +16,7 @@ export default function APP() {
   const [results, setResults] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const prevSearchText = usePrevState(searchText);
 
   /**
    * Event handler for search on click button
@@ -23,23 +25,25 @@ export default function APP() {
   const handleSearch = async (e) => {
     // Prevent page reload
     e.preventDefault();
-    setIsDisabled(true);
-    setIsLoading(true);
-    await Axios.get(baseUrl, {
-      params: {
-        apikey: '24ceeb9c',
-        s: searchText,
-      },
-    })
-      .then((response) => {
-        setResults(response.data.Search);
-        setIsDisabled(false);
-        setIsLoading(false);
+    if (searchText !== '' && searchText !== prevSearchText) {
+      setIsDisabled(true);
+      setIsLoading(true);
+      await Axios.get(baseUrl, {
+        params: {
+          apikey: '24ceeb9c',
+          s: searchText,
+        },
       })
-      .catch((error) => {
-        setIsDisabled(false);
-        setIsLoading(false);
-      });
+        .then((response) => {
+          setResults(response.data.Search);
+          setIsDisabled(false);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          setIsDisabled(false);
+          setIsLoading(false);
+        });
+    }
   };
 
   return (
