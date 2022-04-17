@@ -13,6 +13,8 @@ export default function APP() {
   // SEARCH STATE AND It's results array
   const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState([]);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Event handler for search on click button
@@ -21,12 +23,23 @@ export default function APP() {
   const handleSearch = async (e) => {
     // Prevent page reload
     e.preventDefault();
+    setIsDisabled(true);
+    setIsLoading(true);
     await Axios.get(baseUrl, {
       params: {
         apikey: '24ceeb9c',
         s: searchText,
       },
-    }).then((response) => setResults(response.data.Search));
+    })
+      .then((response) => {
+        setResults(response.data.Search);
+        setIsDisabled(false);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsDisabled(false);
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -35,10 +48,11 @@ export default function APP() {
       <main>
         <Search
           value={searchText}
+          isDisabled={isDisabled}
           setValue={setSearchText}
           onSearch={handleSearch}
         />
-        <Movies searchResults={results} />
+        <Movies searchResults={results} isLoading={isLoading} />
       </main>
     </div>
   );
